@@ -215,7 +215,7 @@ class PhoneBookLivewireController extends DataTableComponent
             'uploadFile' => 'required',
             'select_title' => 'required|different:select_firstname|different:select_lastname|different:select_mobilenum|different:select_companyname',
             'select_firstname' => 'required|different:select_title|different:select_lastname|different:select_mobilenum|different:select_companyname',
-            'select_lastname' => 'required|different:select_firstname|different:select_lastname|different:select_mobilenum|different:select_companyname',
+            'select_lastname' => 'required|different:select_firstname|different:select_mobilenum|different:select_companyname',
             'select_mobilenum' => 'required|different:select_firstname|different:select_lastname|different:select_title|different:select_companyname',
             'select_companyname' => 'required|different:select_firstname|different:select_lastname|different:select_mobilenum|different:select_title',
         ], ['required'   => 'The :attribute field is required']);
