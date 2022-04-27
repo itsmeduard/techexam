@@ -6,7 +6,7 @@ Installation Guide:
 3. docker-compose up -d
 
 
-Package used for this project:
-*itsmeduard/laravel-livewire-tables-modified
-*livewire/livewire
-*maatwebsite/excel
+Package used for this project: <br>
+*itsmeduard/laravel-livewire-tables-modified <br>
+*livewire/livewire <br>
+*maatwebsite/excel <br>
