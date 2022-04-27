@@ -1,0 +1,111 @@
+version: "3.8"
+
+services:
+
+  #Nginx Service
+  webserver:
+    image: nginx:stable-alpine
+    container_name: techexam_nginx
+    restart: unless-stopped
+    ports:
+      - "8585:80"
+    volumes:
+      - .:/var/www/html
+      - ./dockerize/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - techexam
+
+  #MySQL Service
+  mysql:
+    platform: linux/x86_64
+    image: mysql:8.0.28
+    container_name: techexam_mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "4307:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./dockerize/mysql/data:/var/lib/mysql
+      - ./dockerize/mysql/my.cnf:/etc/mysql/conf.d/mysql-custom.cnf
+    networks:
+      - techexam
+
+  #PHP Service
+  php:
+    build:
+      context: .
+      dockerfile: ./dockerize/app/php.dockerfile
+    container_name: techexam_php
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "9003:9000"
+    networks:
+      - techexam
+
+  #Composer Service
+  composer:
+    image: composer:latest
+    container_name: techexam_composer
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    depends_on:
+      - php
+    networks:
+      - techexam
+
+  #NPM Service
+  npm:
+    image: node:14.9
+    container_name: techexam_npm
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: ['npm']
+
+  #Artisan Service
+  artisan:
+    build:
+      context: .
+      dockerfile: ./dockerize/app/php.dockerfile
+    container_name: techexam_artisan
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+    working_dir: /var/www/html
+    entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - techexam
+
+  #PHPMYADMIN
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    container_name: techexam_phpmyadmin
+    depends_on:
+      - mysql
+    ports:
+      - "8283:80"
+    environment:
+      PMA_HOST: mysql
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - techexam
+
+#Docker Networks
+networks:
+  techexam:
